@@ -149,3 +149,78 @@ SELECT first_name, last_name, email
     JOIN country ON
     city.country_id = country.country_id
     WHERE country.country = "Canada";
+
+-- Sales have been lagging among young families, and you wish to target all family movies for a promotion. 
+-- Identify all movies categorized as family films.
+SELECT title
+FROM film
+WHERE film_id IN
+	(SELECT film_id
+		FROM film_category
+        WHERE category_id IN
+        (SELECT category_id
+			FROM category
+            WHERE name = "Family"));
+
+-- Display the most frequently rented movies in descending order.
+SELECT title, COUNT(description) AS "Number of Rentals"
+	FROM film
+    JOIN inventory ON
+    film.film_id = inventory.film_id
+    JOIN rental ON
+    inventory.inventory_id = rental.inventory_id
+    GROUP BY title
+    ORDER BY COUNT(description) DESC;
+
+-- Write a query to display how much business, in dollars, each store brought in.
+ SELECT staff.store_id, SUM(payment.amount) AS "Total Amount of Dollars"
+	FROM staff
+    JOIN payment ON
+    staff.staff_id = payment.staff_id
+    GROUP BY staff.store_id;
+
+-- Write a query to display for each store its store ID, city, and country.
+SELECT store.store_id, city.city, country.country
+	FROM store
+    JOIN address ON
+    store.address_id = address.address_id
+    JOIN city ON
+    address.city_id = city.city_id
+    JOIN country ON
+    city.country_id = country.country_id;
+
+-- List the top five genres in gross revenue in descending order.
+SELECT category.name, SUM(payment.amount) AS "Gross Revenue"
+	FROM category
+    JOIN film_category ON
+    category.category_id = film_category.category_id
+    JOIN inventory ON
+    film_category.film_id = inventory.film_id
+    JOIN rental ON
+    inventory.inventory_id = rental.inventory_id
+    JOIN payment ON
+    rental.rental_id = payment.rental_id
+    GROUP BY category.name
+    ORDER BY SUM(payment.amount) DESC LIMIT 5;
+
+-- In your new role as an executive, you would like to have an easy way of viewing the Top five genres by gross revenue. 
+-- Use the solution from the problem above to create a view.
+CREATE VIEW top_five_genres AS
+SELECT category.name, SUM(payment.amount) AS "Gross Revenue"
+	FROM category
+    JOIN film_category ON
+    category.category_id = film_category.category_id
+    JOIN inventory ON
+    film_category.film_id = inventory.film_id
+    JOIN rental ON
+    inventory.inventory_id = rental.inventory_id
+    JOIN payment ON
+    rental.rental_id = payment.rental_id
+    GROUP BY category.name
+    ORDER BY SUM(payment.amount) DESC LIMIT 5;
+
+-- How would you display the view that you created in 8a?
+SELECT * FROM top_five_genres;
+
+-- You find that you no longer need the view top_five_genres. Write a query to delete it.
+DROP VIEW top_five_genres;
