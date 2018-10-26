@@ -94,7 +94,7 @@ SELECT SUM(payment.amount) AS "Total Amount"
 
 -- List each film and the number of actors who are listed for that film. Use tables film_actor and film. 
 -- Use inner join.
-SELECT COUNT(film_actor.actor_id) AS "Number of Actors", film.title
+SELECT film.title, COUNT(film_actor.actor_id) AS "Number of Actors"
 	FROM film_actor
     INNER JOIN film ON
     film_actor.film_id = film.film_id
